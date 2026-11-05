@@ -1,0 +1,41 @@
+name: REIT-InvIT Watch
+
+on:
+  schedule:
+    - cron: "30 3 * * 1-5"    # 09:00 IST Mon-Fri  -> morning session (till 12:20)
+    - cron: "40 6 * * 1-5"    # 12:10 IST Mon-Fri  -> afternoon session (till 15:31)
+  workflow_dispatch:            # manual "Run workflow" button
+    inputs:
+      mode:
+        description: "test = one check + test alert now; run = live monitoring"
+        type: choice
+        options: [test, run]
+        default: test
+
+# only one monitor at a time; the afternoon run waits for the morning one to finish
+concurrency:
+  group: reit-watch
+  cancel-in-progress: false
+
+permissions:
+  contents: write              # lets the job save state.json and the alert log
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests pyyaml
+      - name: Configure git
+        run: |
+          git config user.name "reit-watch-bot"
+          git config user.email "reit-watch-bot@users.noreply.github.com"
+      - name: Monitor
+        env:
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+        run: python monitor.py --mode ${{ github.event.inputs.mode || 'run' }}
