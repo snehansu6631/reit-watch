@@ -8,6 +8,7 @@ market:
   open: "09:15"          # IST
   close: "15:30"         # IST
   poll_minutes: 5        # how often to check during market hours
+  combine_bse_volume: true      # volume = NSE + BSE together
   volume_checks_from: "10:00"   # ignore volume spikes before this (opening noise)
 
 thresholds:
@@ -35,35 +36,36 @@ alerts:
   morning_heartbeat: true           # quiet "monitor is live" message each morning
 
 scrips:
-  # Each scrip: NSE symbol is tried first (Yahoo code SYMBOL.NS).
-  # If NSE has no data, the BSE code is used (default SYMBOL.BO;
-  # set "bse:" if Yahoo uses a different BSE code, e.g. a 6-digit scrip code + .BO).
+  # Price comes from NSE whenever available. Yahoo's NSE code is SYMBOL-SERIES.NS
+  # (series RR = REIT, IV = InvIT, e.g. EMBASSY-RR.NS). BSE (SYMBOL.BO) is used for
+  # price only if NSE has no current data; volume is NSE + BSE combined.
+  # Exact codes can be forced with nse: / bse: (e.g. bse: 535464.BO).
   # Optional per-scrip overrides: daily_pct, monthly_pct, volume_multiple
   # Set active: false to pause a scrip without deleting it.
   # REITs
-  - {symbol: EMBASSY,     name: Embassy Office Parks REIT}
-  - {symbol: MINDSPACE,   name: Mindspace Business Parks REIT}
-  - {symbol: BIRET,       name: Brookfield India REIT}
-  - {symbol: NXST,        name: Nexus Select Trust}
-  - {symbol: KRT,         name: Knowledge Realty Trust}
-  - {symbol: BAGMANE,     name: Bagmane Prime Office REIT}
+  - {symbol: EMBASSY,     name: Embassy Office Parks REIT, series: RR}
+  - {symbol: MINDSPACE,   name: Mindspace Business Parks REIT, series: RR}
+  - {symbol: BIRET,       name: Brookfield India REIT, series: RR}
+  - {symbol: NXST,        name: Nexus Select Trust, series: RR}
+  - {symbol: KRT,         name: Knowledge Realty Trust, series: RR}
+  - {symbol: BAGMANE,     name: Bagmane Prime Office REIT, series: RR}
   - {symbol: PSTITANIA,   name: Propshare Titania (SM REIT)}
   # InvITs
-  - {symbol: INDIGRID,    name: IndiGrid InvIT}
-  - {symbol: PGINVIT,     name: PowerGrid InvIT}
-  - {symbol: IRBINVIT,    name: IRB InvIT}
-  - {symbol: CUBEINVIT,   name: Cube Highways InvIT}
-  - {symbol: NHIT,        name: National Highways Infra Trust}
-  - {symbol: ANZEN,       name: Anzen India Energy Yield Plus}
-  - {symbol: ANANTAM,     name: Anantam Highways InvIT}
-  - {symbol: CAPINVIT,    name: Capital Infra Trust}
-  - {symbol: RIIT,        name: RIIT InvIT}
-  - {symbol: NDRINVIT,    name: NDR InvIT Trust, active: false}
-  - {symbol: CITIUSINVT,  name: Citius Transnet InvIT}
-  - {symbol: VERTIS,      name: Vertis Infrastructure Trust, bse: 535464.BO, active: false}
-  - {symbol: INDUSINVIT,  name: Indus Infra Trust}
-  - {symbol: INTERISE,    name: Interise Trust}
-  - {symbol: NXT-INFRA,   name: NXT-Infra Trust, active: false}
-  - {symbol: SEITINVIT,   name: Sustainable Energy Infra Trust, active: false}
-  - {symbol: ALTIUSINVIT, name: Altius Telecom Infra Trust}
-  - {symbol: ENERGYINF,   name: Energy Infrastructure Trust}
+  - {symbol: INDIGRID,    name: IndiGrid InvIT, series: IV}
+  - {symbol: PGINVIT,     name: PowerGrid InvIT, series: IV}
+  - {symbol: IRBINVIT,    name: IRB InvIT, series: IV}
+  - {symbol: CUBEINVIT,   name: Cube Highways InvIT, series: IV}
+  - {symbol: NHIT,        name: National Highways Infra Trust, series: IV}
+  - {symbol: ANZEN,       name: Anzen India Energy Yield Plus, series: IV}
+  - {symbol: ANANTAM,     name: Anantam Highways InvIT, series: IV}
+  - {symbol: CAPINVIT,    name: Capital Infra Trust, series: IV}
+  - {symbol: RIIT,        name: RIIT InvIT, series: IV}
+  - {symbol: NDRINVIT,    name: NDR InvIT Trust, series: IV}
+  - {symbol: CITIUSINVT,  name: Citius Transnet InvIT, series: IV}
+  - {symbol: VERTIS,      name: Vertis Infrastructure Trust, series: IV}
+  - {symbol: INDUSINVIT,  name: Indus Infra Trust, series: IV}
+  - {symbol: INTERISE,    name: Interise Trust, series: IV}
+  - {symbol: NXT-INFRA,   name: NXT-Infra Trust, series: IV}
+  - {symbol: SEITINVIT,   name: Sustainable Energy Infra Trust, series: IV}
+  - {symbol: ALTIUSINVIT, name: Altius Telecom Infra Trust, series: IV}
+  - {symbol: ENERGYINF,   name: Energy Infrastructure Trust, series: IV}
