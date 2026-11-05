@@ -58,12 +58,12 @@ scrips:
   - {symbol: ANANTAM,     name: Anantam Highways InvIT}
   - {symbol: CAPINVIT,    name: Capital Infra Trust}
   - {symbol: RIIT,        name: RIIT InvIT}
-  - {symbol: NDRINVIT,    name: NDR InvIT Trust}
+  - {symbol: NDRINVIT,    name: NDR InvIT Trust active: false}
   - {symbol: CITIUSINVT,  name: Citius Transnet InvIT}
-  - {symbol: VERTIS,      name: Vertis Infrastructure Trust}
+  - {symbol: VERTIS,      name: Vertis Infrastructure Trust, bse: 535464.BO}
   - {symbol: INDUSINVIT,  name: Indus Infra Trust}
   - {symbol: INTERISE,    name: Interise Trust}
-  - {symbol: NXT-INFRA,   name: NXT-Infra Trust}
-  - {symbol: SEITINVIT,   name: Sustainable Energy Infra Trust}
+  - {symbol: NXT-INFRA,   name: NXT-Infra Trust active: false}
+  - {symbol: SEITINVIT,   name: Sustainable Energy Infra Trust active: false}
   - {symbol: ALTIUSINVIT, name: Altius Telecom Infra Trust}
   - {symbol: ENERGYINF,   name: Energy Infrastructure Trust}
