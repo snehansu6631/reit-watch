@@ -98,7 +98,7 @@ def push(title, message, priority=0, cfg=None):
 
 
 # ---------------------------------------------------------------- data
-def fetch_yahoo(code):
+def fetch_yahoo_once(code):
     """Return dict with bars (IST date, close, volume) + live meta, or None."""
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{code}"
     try:
@@ -130,19 +130,38 @@ def fetch_yahoo(code):
         return None
 
 
-def fetch_scrip(sc, cache):
-    """NSE first; BSE only if NSE has no data. Remember which one worked."""
-    sym = sc["symbol"]
-    candidates = [sc.get("nse", f"{sym}.NS"), sc.get("bse", f"{sym}.BO")]
-    if sym in cache:                       # try the one that worked last time first
-        candidates.sort(key=lambda c: c != cache[sym])
-    for code in candidates:
-        d = fetch_yahoo(code)
+def fetch_yahoo(code, tries=3):
+    """Retry a couple of times — Yahoo occasionally drops a request."""
+    for i in range(tries):
+        d = fetch_yahoo_once(code)
         if d:
-            cache[sym] = code
-            d["exch"] = "NSE" if code.endswith(".NS") else "BSE"
             return d
+        if i < tries - 1:
+            time.sleep(2)
     return None
+
+
+def fetch_scrip(sc, cache, cfg=None):
+    """Price always from NSE when NSE has data; BSE price only as fallback.
+    Volume = NSE + BSE combined (setting market.combine_bse_volume, default on)."""
+    sym = sc["symbol"]
+    combine = ((cfg or {}).get("market", {}) or {}).get("combine_bse_volume", True)
+    nse = fetch_yahoo(sc.get("nse", f"{sym}.NS"))
+    bse = fetch_yahoo(sc.get("bse", f"{sym}.BO"), tries=1 if nse else 3) if (combine or not nse) else None
+    primary, other = (nse, bse) if nse else (bse, None)
+    if not primary:
+        return None
+    primary["exch"] = "NSE" if nse else "BSE"
+    primary["vol_src"] = primary["exch"]
+    if other and combine:
+        ov = {d: v for d, _, v in other["bars"]}
+        primary["bars"] = [(d, c, v + ov.get(d, 0)) for d, c, v in primary["bars"]]
+        same_day = other["mkt_time"].date() == primary["mkt_time"].date()
+        if primary.get("mkt_volume") is not None:
+            primary["mkt_volume"] = int(primary["mkt_volume"]) + (int(other.get("mkt_volume") or 0) if same_day else 0)
+        primary["vol_src"] = "NSE+BSE"
+    cache[sym] = primary["vol_src"]
+    return primary
 
 
 def metrics(sc, d, cfg, now):
@@ -152,7 +171,7 @@ def metrics(sc, d, cfg, now):
     bars = d["bars"]
     traded_today = bars[-1][0] == today and d["mkt_time"].date() == today
     hist = bars[:-1] if bars[-1][0] == today else bars
-    m = {"price": d["price"], "exch": d["exch"], "code": d["code"],
+    m = {"price": d["price"], "exch": d["exch"], "code": d["code"], "vol_src": d.get("vol_src", d["exch"]),
          "traded_today": traded_today, "day_pct": None, "month_pct": None,
          "rel_vol": None, "today_vol": 0, "avg_vol": None, "avg_value_lakh": None,
          "data_time": d["mkt_time"]}
@@ -231,7 +250,7 @@ def check_triggers(sc, m, cfg, state, now):
             daily[k] = m["rel_vol"]
             p = 2 if m["rel_vol"] >= float(a.get("emergency_if_volume_multiple", 99)) else pri0
             out.append((f"Volume {m['rel_vol']:.1f}x usual for this time "
-                        f"({m['today_vol']:,} vs avg {m['avg_vol']:,.0f}/day)", p))
+                        f"({m['today_vol']:,} vs avg {m['avg_vol']:,.0f}/day, {m['vol_src']})", p))
     return out
 
 
@@ -255,7 +274,7 @@ def scan(cfg, state, now, cache):
     for sc in cfg["scrips"]:
         if sc.get("active", True) is False:
             continue
-        d = fetch_scrip(sc, cache)
+        d = fetch_scrip(sc, cache, cfg)
         if not d:
             missing.append(sc["symbol"])
             continue
@@ -265,7 +284,7 @@ def scan(cfg, state, now, cache):
 
 
 def fmt_alert(sc, m, hits):
-    lines = [f"{sc['name']} ({sc['symbol']} · {m['exch']})",
+    lines = [f"{sc['name']} ({sc['symbol']} · price {m['exch']}, vol {m['vol_src']})",
              f"Price ₹{m['price']:,.2f} · data as of {m['data_time']:%H:%M}"]
     lines += [f"• {h[0]}" for h in hits]
     return "\n".join(lines)
@@ -274,15 +293,15 @@ def fmt_alert(sc, m, hits):
 def run(cfg, mode):
     now = now_ist()
     state = load_state()
-    cache = state.setdefault("exchange_used", {})
+    cache = state.setdefault("volume_source", {}); state.pop("exchange_used", None)
 
     if mode == "test":
         results, missing = scan(cfg, state, now, cache)
-        rows = ["| Scrip | Exch | Price | Day % | 1M % | Rel vol | Avg value ₹L/day |",
-                "|---|---|---|---|---|---|---|"]
+        rows = ["| Scrip | Price from | Volume from | Price | Day % | 1M % | Rel vol | Avg value ₹L/day |",
+                "|---|---|---|---|---|---|---|---|"]
         f2 = lambda x, s="": "–" if x is None else f"{x:.2f}{s}"
         for sc, m in results:
-            rows.append(f"| {sc['symbol']} | {m['exch']} | {m['price']:,.2f} | {f2(m['day_pct'])} | "
+            rows.append(f"| {sc['symbol']} | {m['exch']} | {m['vol_src']} | {m['price']:,.2f} | {f2(m['day_pct'])} | "
                         f"{f2(m['month_pct'])} | {f2(m['rel_vol'], 'x')} | {f2(m['avg_value_lakh'])} |")
         report = "\n".join(rows)
         if missing:
@@ -291,9 +310,9 @@ def run(cfg, mode):
         if os.environ.get("GITHUB_STEP_SUMMARY"):
             with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
                 f.write("## REIT Watch — test run\n\n" + report + "\n")
-        bse = [sc["symbol"] for sc, m in results if m["exch"] == "BSE"]
+        bse = [sc["symbol"] for sc, m in results if m["exch"] == "BSE"]  # price fallback only
         msg = (f"{len(results)}/{len(results) + len(missing)} scrips OK."
-               + (f"\nUsing BSE: {', '.join(bse)}" if bse else "")
+               + (f"\nPrice from BSE (no NSE data): {', '.join(bse)}" if bse else "")
                + (f"\nMISSING: {', '.join(missing)}" if missing else ""))
         push("REIT Watch — test ✅", msg, 1, cfg)
         save_state(state)
