@@ -102,7 +102,7 @@ def fetch_yahoo_once(code):
     """Return dict with bars (IST date, close, volume) + live meta, or None."""
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{code}"
     try:
-        r = requests.get(url, params={"range": "3mo", "interval": "1d"}, headers=UA, timeout=20)
+        r = requests.get(url, params={"range": "6mo", "interval": "1d"}, headers=UA, timeout=20)
         if r.status_code != 200:
             return None
         res = (r.json().get("chart") or {}).get("result")
@@ -169,9 +169,21 @@ def fetch_scrip(sc, cache, cfg=None):
         return None
     primary["exch"] = "NSE" if nse else "BSE"
     primary["vol_src"] = primary["exch"]
+    primary["hist_note"] = f"{len(primary['bars'])}" + (f"/{len(other['bars'])}" if other else "")
     if other and combine:
-        ov = {d: v for d, _, v in other["bars"]}
-        primary["bars"] = [(d, c, v + ov.get(d, 0)) for d, c, v in primary["bars"]]
+        # Union of dates: NSE close where NSE has the day, BSE close only to fill gaps
+        # in NSE history; volume always NSE + BSE for each day.
+        pc = {d: (c, v) for d, c, v in primary["bars"]}
+        oc = {d: (c, v) for d, c, v in other["bars"]}
+        merged = []
+        for d in sorted(set(pc) | set(oc)):
+            if d > primary["mkt_time"].date():
+                continue
+            c = pc[d][0] if d in pc else oc[d][0]
+            # day missing on NSE -> volume unknown (-1), excluded from the volume average
+            v = (pc[d][1] + (oc[d][1] if d in oc else 0)) if d in pc else -1
+            merged.append((d, c, v))
+        primary["bars"] = merged
         same_day = other["mkt_time"].date() == primary["mkt_time"].date()
         if primary.get("mkt_volume") is not None:
             primary["mkt_volume"] = int(primary["mkt_volume"]) + (int(other.get("mkt_volume") or 0) if same_day else 0)
@@ -188,6 +200,7 @@ def metrics(sc, d, cfg, now):
     traded_today = bars[-1][0] == today and d["mkt_time"].date() == today
     hist = bars[:-1] if bars[-1][0] == today else bars
     m = {"price": d["price"], "exch": d["exch"], "code": d["code"], "vol_src": d.get("vol_src", d["exch"]),
+         "hist_note": d.get("hist_note", ""),
          "traded_today": traded_today, "day_pct": None, "month_pct": None,
          "rel_vol": None, "today_vol": 0, "avg_vol": None, "avg_value_lakh": None,
          "data_time": d["mkt_time"]}
@@ -201,7 +214,7 @@ def metrics(sc, d, cfg, now):
     if len(hist) >= lb and hist[-lb][1]:
         m["month_pct"] = (d["price"] / hist[-lb][1] - 1) * 100
     n = int(t.get("volume_avg_days", 20))
-    window = hist[-n:]
+    window = [b for b in hist if b[2] >= 0][-n:]   # only days with complete volume
     if len(window) >= max(5, n // 2):
         avg = sum(b[2] for b in window) / len(window)
         m["avg_vol"] = avg
@@ -313,12 +326,12 @@ def run(cfg, mode):
 
     if mode == "test":
         results, missing = scan(cfg, state, now, cache)
-        rows = ["| Scrip | Price from (Yahoo code) | Volume from | Price | Day % | 1M % | Rel vol | Avg value ₹L/day |",
-                "|---|---|---|---|---|---|---|---|"]
+        rows = ["| Scrip | Price from (Yahoo code) | Volume from | Price | Day % | 1M % | Rel vol | Avg value ₹L/day | Days of history (NSE/BSE) |",
+                "|---|---|---|---|---|---|---|---|---|"]
         f2 = lambda x, s="": "–" if x is None else f"{x:.2f}{s}"
         for sc, m in results:
             rows.append(f"| {sc['symbol']} | {m['code']} | {m['vol_src']} | {m['price']:,.2f} | {f2(m['day_pct'])} | "
-                        f"{f2(m['month_pct'])} | {f2(m['rel_vol'], 'x')} | {f2(m['avg_value_lakh'])} |")
+                        f"{f2(m['month_pct'])} | {f2(m['rel_vol'], 'x')} | {f2(m['avg_value_lakh'])} | {m['hist_note']} |")
         report = "\n".join(rows)
         if missing:
             report += "\n\n**MISSING (fix Yahoo code in config.yaml):** " + ", ".join(missing)
