@@ -142,12 +142,28 @@ def fetch_yahoo(code, tries=3):
 
 
 def fetch_scrip(sc, cache, cfg=None):
-    """Price always from NSE when NSE has data; BSE price only as fallback.
-    Volume = NSE + BSE combined (setting market.combine_bse_volume, default on)."""
+    """Price from NSE whenever NSE has current data; BSE price only as fallback.
+    Yahoo lists NSE REITs/InvITs with the series attached (EMBASSY-RR.NS, INDIGRID-IV.NS);
+    the plain code (INDIGRID.NS) can be an old, stale listing — so it is tried last and
+    rejected if its data is older than BSE's. Volume = NSE + BSE combined (default on)."""
     sym = sc["symbol"]
     combine = ((cfg or {}).get("market", {}) or {}).get("combine_bse_volume", True)
-    nse = fetch_yahoo(sc.get("nse", f"{sym}.NS"))
-    bse = fetch_yahoo(sc.get("bse", f"{sym}.BO"), tries=1 if nse else 3) if (combine or not nse) else None
+    series = sc.get("series")
+    if sc.get("nse"):
+        nse_codes = [sc["nse"]]
+    else:
+        nse_codes = ([f"{sym}-{series}.NS"] if series else []) + [f"{sym}.NS"]
+    bse = fetch_yahoo(sc.get("bse", f"{sym}.BO"), tries=2)
+    nse = None
+    for i, code in enumerate(nse_codes):
+        d = fetch_yahoo(code, tries=3 if i == 0 else 1)
+        if not d:
+            continue
+        if bse and d["mkt_time"].date() < bse["mkt_time"].date() - timedelta(days=5):
+            print(f"  {code}: stale NSE listing (last {d['mkt_time']:%Y-%m-%d}) — skipped")
+            continue
+        nse = d
+        break
     primary, other = (nse, bse) if nse else (bse, None)
     if not primary:
         return None
@@ -160,7 +176,7 @@ def fetch_scrip(sc, cache, cfg=None):
         if primary.get("mkt_volume") is not None:
             primary["mkt_volume"] = int(primary["mkt_volume"]) + (int(other.get("mkt_volume") or 0) if same_day else 0)
         primary["vol_src"] = "NSE+BSE"
-    cache[sym] = primary["vol_src"]
+    cache[sym] = f"{primary['code']} ({primary['vol_src']})"
     return primary
 
 
@@ -297,11 +313,11 @@ def run(cfg, mode):
 
     if mode == "test":
         results, missing = scan(cfg, state, now, cache)
-        rows = ["| Scrip | Price from | Volume from | Price | Day % | 1M % | Rel vol | Avg value ₹L/day |",
+        rows = ["| Scrip | Price from (Yahoo code) | Volume from | Price | Day % | 1M % | Rel vol | Avg value ₹L/day |",
                 "|---|---|---|---|---|---|---|---|"]
         f2 = lambda x, s="": "–" if x is None else f"{x:.2f}{s}"
         for sc, m in results:
-            rows.append(f"| {sc['symbol']} | {m['exch']} | {m['vol_src']} | {m['price']:,.2f} | {f2(m['day_pct'])} | "
+            rows.append(f"| {sc['symbol']} | {m['code']} | {m['vol_src']} | {m['price']:,.2f} | {f2(m['day_pct'])} | "
                         f"{f2(m['month_pct'])} | {f2(m['rel_vol'], 'x')} | {f2(m['avg_value_lakh'])} |")
         report = "\n".join(rows)
         if missing:
