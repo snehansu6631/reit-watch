@@ -4,7 +4,7 @@ Runs inside GitHub Actions. Modes:
   --mode run   : loop through the market session window, alert on triggers
   --mode test  : one pass over all scrips, print a table, send a test alert
 """
-import argparse, csv, json, os, subprocess, sys, time, traceback
+import argparse, csv, io, json, os, subprocess, sys, time, traceback, zipfile
 from datetime import datetime, timedelta, timezone
 
 import requests
@@ -14,6 +14,9 @@ IST = timezone(timedelta(hours=5, minutes=30))
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(ROOT, "state.json")
 LOG_FILE = os.path.join(ROOT, "logs", "alerts.csv")
+HIST_FILE = os.path.join(ROOT, "nse_history.json")   # NSE daily close+volume per scrip
+NSE_HIST = {"data": {}, "loaded": [], "no_file": []}  # filled at start of each run
+LAST_NSE = {}                                         # today's NSE figures from Yahoo, for EOD capture
 UA = {"User-Agent": "Mozilla/5.0 (reit-watch personal monitor)"}
 SESSION_SPLIT = "12:20"   # morning job runs until here, afternoon job from here
 
@@ -57,7 +60,10 @@ def git_commit(msg):
     if not os.environ.get("GITHUB_ACTIONS"):
         return
     try:
-        subprocess.run(["git", "add", "state.json", "logs"], cwd=ROOT, check=True)
+        paths = [p for p in ("state.json", "logs", "nse_history.json") if os.path.exists(os.path.join(ROOT, p))]
+        if not paths:
+            return
+        subprocess.run(["git", "add", *paths], cwd=ROOT, check=True)
         if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
             return
         subprocess.run(["git", "commit", "-q", "-m", msg], cwd=ROOT, check=True)
@@ -141,6 +147,122 @@ def fetch_yahoo(code, tries=3):
     return None
 
 
+# ---------------------------------------------------------------- NSE daily history
+# Yahoo's NSE REIT/InvIT codes return only today's bar, so past NSE volumes come from
+# (a) NSE's official daily bhavcopy files (nsearchives), and (b) as a backup, the
+# script's own end-of-day capture. Stored in nse_history.json in the repo.
+NSE_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                        "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+          "Accept": "*/*", "Referer": "https://www.nseindia.com/"}
+
+
+def load_hist():
+    global NSE_HIST
+    try:
+        with open(HIST_FILE) as f:
+            NSE_HIST = json.load(f)
+    except Exception:
+        NSE_HIST = {"data": {}, "loaded": [], "no_file": []}
+    for k in ("data", "loaded", "no_file"):
+        NSE_HIST.setdefault(k, {} if k == "data" else [])
+
+
+def save_hist():
+    cutoff = (now_ist() - timedelta(days=75)).strftime("%Y-%m-%d")
+    for sym in NSE_HIST["data"]:
+        NSE_HIST["data"][sym] = {d: v for d, v in NSE_HIST["data"][sym].items() if d >= cutoff}
+    NSE_HIST["loaded"] = sorted(d for d in NSE_HIST["loaded"] if d >= cutoff)
+    NSE_HIST["no_file"] = sorted(d for d in NSE_HIST["no_file"] if d >= cutoff)
+    with open(HIST_FILE, "w") as f:
+        json.dump(NSE_HIST, f, indent=0, sort_keys=True)
+
+
+def _col(header, *names):
+    h = [c.strip().upper() for c in header]
+    for n in names:
+        if n.upper() in h:
+            return h.index(n.upper())
+    return None
+
+
+def fetch_bhavcopy(day):
+    """Return {(SYMBOL, SERIES): (close, volume)} for one trading day, None if unavailable."""
+    ymd, dmy = day.strftime("%Y%m%d"), day.strftime("%d%m%Y")
+    urls = [f"https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_{ymd}_F_0000.csv.zip",
+            f"https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_{dmy}.csv"]
+    for url in urls:
+        try:
+            r = requests.get(url, headers=NSE_UA, timeout=30)
+            if r.status_code != 200 or len(r.content) < 200:
+                continue
+            if url.endswith(".zip"):
+                z = zipfile.ZipFile(io.BytesIO(r.content))
+                text = z.read(z.namelist()[0]).decode("utf-8", "ignore")
+            else:
+                text = r.content.decode("utf-8", "ignore")
+            rows = list(csv.reader(io.StringIO(text)))
+            hdr = rows[0]
+            iS, iR = _col(hdr, "TckrSymb", "SYMBOL"), _col(hdr, "SctySrs", "SERIES")
+            iC, iV = _col(hdr, "ClsPric", "CLOSE_PRICE"), _col(hdr, "TtlTradgVol", "TTL_TRD_QNTY")
+            if None in (iS, iR, iC, iV):
+                print(f"  bhavcopy {ymd}: unexpected columns {hdr[:12]}")
+                continue
+            out = {}
+            for row in rows[1:]:
+                try:
+                    out[(row[iS].strip(), row[iR].strip())] = (float(row[iC]), int(float(row[iV])))
+                except Exception:
+                    pass
+            return out
+        except Exception as e:
+            print(f"  bhavcopy {ymd} {url[-30:]} failed: {e}")
+    return None
+
+
+def update_hist_from_bhavcopy(cfg, days_needed=30, max_downloads=40):
+    """Load any missing trading days (weekdays) of the last ~45 calendar days."""
+    wanted = {(sc["symbol"], sc.get("series")) for sc in cfg["scrips"]}
+    today = now_ist().date()
+    got, failed, tried = 0, 0, 0
+    for back in range(1, 46):
+        if len(NSE_HIST["loaded"]) >= days_needed and back > 7:
+            break
+        day = today - timedelta(days=back)
+        key = day.strftime("%Y-%m-%d")
+        if day.weekday() >= 5 or key in NSE_HIST["loaded"] or key in NSE_HIST["no_file"]:
+            continue
+        if tried >= max_downloads:
+            break
+        tried += 1
+        data = fetch_bhavcopy(day)
+        if data is None:
+            failed += 1
+            if back > 4:                   # older date with no file = holiday (recent ones may just be late)
+                NSE_HIST["no_file"].append(key)
+            if failed >= 6 and got == 0:  # NSE is blocking us — stop trying this run
+                print("  NSE archives not reachable from here; relying on end-of-day capture")
+                break
+            continue
+        got += 1
+        NSE_HIST["loaded"].append(key)
+        for (sym, ser), (c, v) in data.items():
+            for wsym, wser in wanted:
+                if sym == wsym and (wser is None or ser == wser):
+                    NSE_HIST["data"].setdefault(wsym, {})[key] = [c, v, "bhav"]
+        time.sleep(0.5)
+    print(f"NSE bhavcopy: loaded {got} new day(s), {len(NSE_HIST['loaded'])} days stored, {failed} unavailable")
+    return got, failed
+
+
+def capture_eod():
+    """Backup: store today's final NSE close+volume seen on Yahoo (bhavcopy overwrites later)."""
+    for sym, (d, c, v) in LAST_NSE.items():
+        key = d.strftime("%Y-%m-%d")
+        rec = NSE_HIST["data"].setdefault(sym, {})
+        if key not in rec or rec[key][2] != "bhav":
+            rec[key] = [c, v, "eod"]
+
+
 def fetch_scrip(sc, cache, cfg=None):
     """Price from NSE whenever NSE has current data; BSE price only as fallback.
     Yahoo lists NSE REITs/InvITs with the series attached (EMBASSY-RR.NS, INDIGRID-IV.NS);
@@ -164,6 +286,17 @@ def fetch_scrip(sc, cache, cfg=None):
             continue
         nse = d
         break
+    if nse:
+        today_d = nse["mkt_time"].date()
+        tb = [b for b in nse["bars"] if b[0] == today_d]
+        if tb:
+            LAST_NSE[sym] = (today_d, nse["price"], max(tb[-1][2], int(nse.get("mkt_volume") or 0)))
+        have = {b[0] for b in nse["bars"]}
+        for k, (c, v, _src) in NSE_HIST["data"].get(sym, {}).items():
+            d = datetime.strptime(k, "%Y-%m-%d").date()
+            if d < today_d and d not in have:
+                nse["bars"].append((d, float(c), int(v)))
+        nse["bars"].sort(key=lambda b: b[0])
     primary, other = (nse, bse) if nse else (bse, None)
     if not primary:
         return None
@@ -323,6 +456,9 @@ def run(cfg, mode):
     now = now_ist()
     state = load_state()
     cache = state.setdefault("volume_source", {}); state.pop("exchange_used", None)
+    load_hist()
+    bhav_got, bhav_failed = update_hist_from_bhavcopy(cfg)
+    save_hist()
 
     if mode == "test":
         results, missing = scan(cfg, state, now, cache)
@@ -335,12 +471,15 @@ def run(cfg, mode):
         report = "\n".join(rows)
         if missing:
             report += "\n\n**MISSING (fix Yahoo code in config.yaml):** " + ", ".join(missing)
+        report += (f"\n\nNSE history files: {len(NSE_HIST['loaded'])} trading days stored"
+                   f" ({bhav_got} downloaded this run" + (", NSE archives NOT reachable" if bhav_got == 0 and bhav_failed >= 6 else "") + ")")
         print(report)
         if os.environ.get("GITHUB_STEP_SUMMARY"):
             with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
                 f.write("## REIT Watch — test run\n\n" + report + "\n")
         bse = [sc["symbol"] for sc, m in results if m["exch"] == "BSE"]  # price fallback only
         msg = (f"{len(results)}/{len(results) + len(missing)} scrips OK."
+               + f"\nNSE history: {len(NSE_HIST['loaded'])} days" + (" (NSE blocked — will build daily)" if bhav_got == 0 and bhav_failed >= 6 else "")
                + (f"\nPrice from BSE (no NSE data): {', '.join(bse)}" if bse else "")
                + (f"\nMISSING: {', '.join(missing)}" if missing else ""))
         push("REIT Watch — test ✅", msg, 1, cfg)
@@ -404,6 +543,13 @@ def run(cfg, mode):
             time.sleep(sleep)
         elif sleep > 0:
             break
+    if end_t > close_t:                       # afternoon job: take final figures after the close
+        wait = (end_t + timedelta(minutes=2) - now_ist()).total_seconds()
+        if wait > 0:
+            time.sleep(wait)
+        scan(cfg, state, now_ist(), cache)    # refreshes today's NSE close/volume
+        capture_eod()
+        save_hist()
     save_state(state)
     git_commit(f"session end {now_ist():%Y-%m-%d %H:%M}")
 
