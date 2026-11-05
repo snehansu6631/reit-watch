@@ -1,0 +1,69 @@
+# ============================================================
+#  REIT / InvIT Watch — settings
+#  Edit this file on GitHub (pencil icon) to change thresholds
+#  or scrips. Changes apply from the next run (next session).
+# ============================================================
+
+market:
+  open: "09:15"          # IST
+  close: "15:30"         # IST
+  poll_minutes: 5        # how often to check during market hours
+  volume_checks_from: "10:00"   # ignore volume spikes before this (opening noise)
+
+thresholds:
+  # --- Price ---
+  daily_pct: 2.0         # alert if price moves +/- this % vs previous close
+  daily_step_pct: 1.0    # re-alert same day only if move grows by this much more (2% -> 3% -> 4%)
+  monthly_pct: 5.0       # alert if price moves +/- this % vs close ~1 month (21 trading days) ago
+  monthly_step_pct: 2.0  # re-alert only if monthly move grows by this much more (5% -> 7% -> 9%)
+  monthly_lookback_days: 21
+
+  # --- Volume (today's volume vs normal for this time of day) ---
+  volume_multiple: 2.5   # alert if today's volume so far >= 2.5x the usual volume by this time
+  volume_avg_days: 20    # "usual" = average daily volume over last 20 trading days
+  volume_min_avg_value_lakh: 5   # skip volume checks for scrips averaging < Rs 5 lakh traded/day (too illiquid to be meaningful)
+
+alerts:
+  # Pushover priority: 0 = normal, 1 = high (loud, breaks Focus/quiet hours),
+  # 2 = emergency (repeats until you tap Acknowledge)
+  default_priority: 1
+  emergency_if_daily_pct: 3.0       # daily move >= this -> emergency
+  emergency_if_monthly_pct: 8.0     # monthly move >= this -> emergency
+  emergency_if_volume_multiple: 5.0 # volume >= this multiple -> emergency
+  emergency_retry_seconds: 60       # emergency alert repeats every 60s...
+  emergency_expire_seconds: 900     # ...for up to 15 min unless acknowledged
+  morning_heartbeat: true           # quiet "monitor is live" message each morning
+
+scrips:
+  # Each scrip: NSE symbol is tried first (Yahoo code SYMBOL.NS).
+  # If NSE has no data, the BSE code is used (default SYMBOL.BO;
+  # set "bse:" if Yahoo uses a different BSE code, e.g. a 6-digit scrip code + .BO).
+  # Optional per-scrip overrides: daily_pct, monthly_pct, volume_multiple
+  # Set active: false to pause a scrip without deleting it.
+  # REITs
+  - {symbol: EMBASSY,     name: Embassy Office Parks REIT}
+  - {symbol: MINDSPACE,   name: Mindspace Business Parks REIT}
+  - {symbol: BIRET,       name: Brookfield India REIT}
+  - {symbol: NXST,        name: Nexus Select Trust}
+  - {symbol: KRT,         name: Knowledge Realty Trust}
+  - {symbol: BAGMANE,     name: Bagmane Prime Office REIT}
+  - {symbol: PSTITANIA,   name: Propshare Titania (SM REIT)}
+  # InvITs
+  - {symbol: INDIGRID,    name: IndiGrid InvIT}
+  - {symbol: PGINVIT,     name: PowerGrid InvIT}
+  - {symbol: IRBINVIT,    name: IRB InvIT}
+  - {symbol: CUBEINVIT,   name: Cube Highways InvIT}
+  - {symbol: NHIT,        name: National Highways Infra Trust}
+  - {symbol: ANZEN,       name: Anzen India Energy Yield Plus}
+  - {symbol: ANANTAM,     name: Anantam Highways InvIT}
+  - {symbol: CAPINVIT,    name: Capital Infra Trust}
+  - {symbol: RIIT,        name: RIIT InvIT}
+  - {symbol: NDRINVIT,    name: NDR InvIT Trust}
+  - {symbol: CITIUSINVT,  name: Citius Transnet InvIT}
+  - {symbol: VERTIS,      name: Vertis Infrastructure Trust}
+  - {symbol: INDUSINVIT,  name: Indus Infra Trust}
+  - {symbol: INTERISE,    name: Interise Trust}
+  - {symbol: NXT-INFRA,   name: NXT-Infra Trust}
+  - {symbol: SEITINVIT,   name: Sustainable Energy Infra Trust}
+  - {symbol: ALTIUSINVIT, name: Altius Telecom Infra Trust}
+  - {symbol: ENERGYINF,   name: Energy Infrastructure Trust}
