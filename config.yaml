@@ -60,7 +60,7 @@ scrips:
   - {symbol: RIIT,        name: RIIT InvIT}
   - {symbol: NDRINVIT,    name: NDR InvIT Trust, active: false}
   - {symbol: CITIUSINVT,  name: Citius Transnet InvIT}
-  - {symbol: VERTIS,      name: Vertis Infrastructure Trust, bse: 535464.BO}
+  - {symbol: VERTIS,      name: Vertis Infrastructure Trust, bse: 535464.BO, active: false}
   - {symbol: INDUSINVIT,  name: Indus Infra Trust}
   - {symbol: INTERISE,    name: Interise Trust}
   - {symbol: NXT-INFRA,   name: NXT-Infra Trust, active: false}
