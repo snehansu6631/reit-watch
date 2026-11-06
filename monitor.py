@@ -93,6 +93,7 @@ def push(title, message, priority=0, cfg=None):
         try:
             r = requests.post("https://api.pushover.net/1/messages.json", data=data, timeout=20)
             if r.status_code == 200:
+                print("  -> Pushover accepted (sent OK)")
                 return True
             print("  pushover error", r.status_code, r.text[:200])
             if r.status_code < 500:
@@ -482,7 +483,8 @@ def run(cfg, mode):
                + f"\nNSE history: {len(NSE_HIST['loaded'])} days" + (" (NSE blocked — will build daily)" if bhav_got == 0 and bhav_failed >= 6 else "")
                + (f"\nPrice from BSE (no NSE data): {', '.join(bse)}" if bse else "")
                + (f"\nMISSING: {', '.join(missing)}" if missing else ""))
-        push("REIT Watch — test ✅", msg, 1, cfg)
+        tp = int(cfg.get("alerts", {}).get("default_priority", 1))
+        push("REIT Watch — test ✅", msg + ("\n(Emergency test — tap Acknowledge to stop)" if tp == 2 else ""), tp, cfg)
         save_state(state)
         git_commit("test run")
         return
