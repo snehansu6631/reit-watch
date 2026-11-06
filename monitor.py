@@ -374,33 +374,57 @@ def check_triggers(sc, m, cfg, state, now):
     monthly = state.setdefault("monthly", {})
     pri0 = int(a.get("default_priority", 1))
 
-    # 1) Daily price move — re-alert only as move grows by daily_step_pct
+    # 1) Daily price move.
+    #    First alert: |day change vs previous close| >= daily_pct.
+    #    After that (same day): alert only when price moves >= followup_move_pct
+    #    from the price at the LAST alert sent (either direction); that price becomes the new reference.
     thr = float(sc.get("daily_pct", t["daily_pct"]))
-    step = float(t.get("daily_step_pct", 1.0))
-    if m["day_pct"] is not None and abs(m["day_pct"]) >= thr:
-        direction = "up" if m["day_pct"] > 0 else "down"
-        level = thr + step * int((abs(m["day_pct"]) - thr) // step)
-        k = f"{sym}|day|{direction}"
-        if level > daily.get(k, 0):
-            daily[k] = level
-            p = 2 if abs(m["day_pct"]) >= float(a.get("emergency_if_daily_pct", 99)) else pri0
-            out.append((f"Price {m['day_pct']:+.2f}% today (vs prev close)", p))
+    fthr = float(sc.get("followup_move_pct", t.get("followup_move_pct", thr)))
+    k = f"{sym}|day"
+    ref = daily.get(k)
+    if m["day_pct"] is not None:
+        p = 2 if abs(m["day_pct"]) >= float(a.get("emergency_if_daily_pct", 99)) else pri0
+        if ref is None:
+            if abs(m["day_pct"]) >= thr:
+                daily[k] = m["price"]
+                out.append((f"Price {m['day_pct']:+.2f}% today (vs prev close)", p))
+        elif isinstance(ref, (int, float)) and ref > 0:
+            move = (m["price"] / ref - 1) * 100
+            if abs(move) >= fthr:
+                daily[k] = m["price"]
+                out.append((f"Moved {move:+.2f}% since last alert at ₹{ref:,.2f} "
+                            f"(day change now {m['day_pct']:+.2f}%)", max(p, pri0)))
 
-    # 2) Monthly move — persistent across days; resets when move fades below threshold - 1%
+    # 2) ~1-month move (persists across days).
+    #    First alert: |1M change| >= monthly_pct.
+    #    Re-alert only if price moves a further monthly_followup_pct beyond the price at the
+    #    last monthly alert, in the same direction. Resets once |1M change| < monthly_pct - 1.
     thr = float(sc.get("monthly_pct", t["monthly_pct"]))
-    step = float(t.get("monthly_step_pct", 2.0))
+    fthr = float(sc.get("monthly_followup_pct", t.get("monthly_followup_pct", 2.0)))
+    k = f"{sym}|month"
+    for old_dir in ("up", "down"):             # migrate old-format state without re-alerting
+        if f"{sym}|month|{old_dir}" in monthly:
+            del monthly[f"{sym}|month|{old_dir}"]
+            if k not in monthly:
+                monthly[k] = {"ref": m["price"], "dir": old_dir}
     if m["month_pct"] is not None:
         mp = m["month_pct"]
-        for direction, sign in (("up", 1), ("down", -1)):
-            k = f"{sym}|month|{direction}"
-            if sign * mp >= thr:
-                level = thr + step * int((abs(mp) - thr) // step)
-                if level > monthly.get(k, 0):
-                    monthly[k] = level
-                    p = 2 if abs(mp) >= float(a.get("emergency_if_monthly_pct", 99)) else pri0
-                    out.append((f"Price {mp:+.2f}% over ~1 month", p))
-            elif sign * mp < thr - 1 and k in monthly:
-                del monthly[k]
+        p = 2 if abs(mp) >= float(a.get("emergency_if_monthly_pct", 99)) else pri0
+        rec = monthly.get(k)
+        if rec and abs(mp) < thr - 1:
+            del monthly[k]                     # move has faded — re-arm
+            rec = None
+        if rec is None:
+            if abs(mp) >= thr:
+                monthly[k] = {"ref": m["price"], "dir": "up" if mp > 0 else "down"}
+                out.append((f"Price {mp:+.2f}% over ~1 month", p))
+        else:
+            sign = 1 if rec["dir"] == "up" else -1
+            further = sign * (m["price"] / rec["ref"] - 1) * 100
+            if further >= fthr:
+                monthly[k] = {"ref": m["price"], "dir": rec["dir"]}
+                out.append((f"1-month move extended: {mp:+.2f}% over ~1 month "
+                            f"({sign*further:+.2f}% beyond last alert at ₹{rec['ref']:,.2f})", p))
 
     # 3) Volume vs usual-by-this-time
     vthr = float(sc.get("volume_multiple", t["volume_multiple"]))
