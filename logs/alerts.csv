@@ -1,0 +1,5 @@
+time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,priority
+2026-11-06 09:30,PSTITANIA,BSE,999999.0,,-9.54,,09:19,Price -9.54% over ~1 month,2
+2026-11-06 09:30,IRBINVIT,NSE,60.57,0.20,-5.02,0.24,09:30,Price -5.02% over ~1 month,2
+2026-11-06 09:30,INDUSINVIT,NSE,129.71,-2.83,0.94,0.19,09:30,Price -2.83% today (vs prev close),2
+2026-11-06 09:30,ENERGYINF,BSE,67.6,,-8.38,,14:57,Price -8.38% over ~1 month,2

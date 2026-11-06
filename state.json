@@ -1,4 +1,13 @@
 {
+ "daily": {
+  "INDUSINVIT|day|down": 2.0,
+  "_date": "2026-11-06"
+ },
+ "monthly": {
+  "ENERGYINF|month|down": 7.0,
+  "IRBINVIT|month|down": 5.0,
+  "PSTITANIA|month|down": 9.0
+ },
  "volume_source": {
   "ALTIUSINVIT": "ALTIUSINVIT.BO (BSE)",
   "ANANTAM": "ANANTAM-IV.NS (NSE+BSE)",
