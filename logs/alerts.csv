@@ -7,3 +7,5 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-06 09:50,KRT,NSE,110.06,-2.07,-1.66,0.68,09:50,Price -2.07% today (vs prev close),2
 2026-11-06 10:45,ANANTAM,NSE,102.35,2.35,-2.28,0.78,10:45,Price +2.35% today (vs prev close),2
 2026-11-06 11:10,ENERGYINF,BSE,66.66,-1.02,-9.65,0.47,10:54,Price -9.65% over ~1 month,2
+2026-11-06 13:06,CITIUSINVT,NSE,116.15,-2.21,1.11,0.19,12:58,Price -2.21% today (vs prev close),2
+2026-11-06 13:06,INDUSINVIT,NSE,129.99,-2.62,1.16,0.20,13:06,Price -2.62% today (vs prev close),2

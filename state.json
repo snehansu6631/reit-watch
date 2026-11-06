@@ -1,14 +1,25 @@
 {
  "daily": {
   "ANANTAM|day|up": 2.0,
+  "CITIUSINVT|day": 116.15,
+  "INDUSINVIT|day": 129.99,
   "INDUSINVIT|day|down": 3.0,
   "KRT|day|down": 2.0,
   "_date": "2026-11-06"
  },
  "monthly": {
-  "ENERGYINF|month|down": 9.0,
-  "IRBINVIT|month|down": 5.0,
-  "PSTITANIA|month|down": 9.0
+  "ENERGYINF|month": {
+   "dir": "down",
+   "ref": 67.45
+  },
+  "IRBINVIT|month": {
+   "dir": "down",
+   "ref": 60.79
+  },
+  "PSTITANIA|month": {
+   "dir": "down",
+   "ref": 999999.0
+  }
  },
  "volume_source": {
   "ALTIUSINVIT": "ALTIUSINVIT.BO (BSE)",
