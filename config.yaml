@@ -27,12 +27,12 @@ thresholds:
 alerts:
   # Pushover priority: 0 = normal, 1 = high (loud, breaks Focus/quiet hours),
   # 2 = emergency (repeats until you tap Acknowledge)
-  default_priority: 1
+  default_priority: 2
   emergency_if_daily_pct: 3.0       # daily move >= this -> emergency
   emergency_if_monthly_pct: 8.0     # monthly move >= this -> emergency
   emergency_if_volume_multiple: 5.0 # volume >= this multiple -> emergency
-  emergency_retry_seconds: 60       # emergency alert repeats every 60s...
-  emergency_expire_seconds: 900     # ...for up to 15 min unless acknowledged
+  emergency_retry_seconds: 30       # emergency alert repeats every 60s...
+  emergency_expire_seconds: 3600     # ...for up to 15 min unless acknowledged
   morning_heartbeat: true           # quiet "monitor is live" message each morning
 
 scrips:
