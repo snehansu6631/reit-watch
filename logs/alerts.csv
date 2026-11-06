@@ -10,3 +10,5 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-06 13:06,CITIUSINVT,NSE,116.15,-2.21,1.11,0.19,12:58,Price -2.21% today (vs prev close),2
 2026-11-06 13:06,INDUSINVIT,NSE,129.99,-2.62,1.16,0.20,13:06,Price -2.62% today (vs prev close),2
 2026-11-06 13:11,ANANTAM,NSE,102.0,2.00,-2.62,0.66,13:07,Price +2.00% today (vs prev close),2
+2026-11-06 15:26,ENERGYINF,BSE,66.0,-2.37,-10.39,0.53,15:10,Price -2.37% today (vs prev close),2
+2026-11-06 15:26,ENERGYINF,BSE,66.0,-2.37,-10.39,0.53,15:10,1-month move extended: -10.39% over ~1 month (-2.15% beyond last alert at ₹67.45),2
