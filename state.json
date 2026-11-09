@@ -1,22 +1,12 @@
 {
  "daily": {
-  "ANANTAM|day": 102.0,
-  "ANANTAM|day|up": 2.0,
-  "CITIUSINVT|day": 116.15,
-  "ENERGYINF|day": 66.0,
-  "INDUSINVIT|day": 129.99,
-  "INDUSINVIT|day|down": 3.0,
-  "KRT|day|down": 2.0,
-  "_date": "2026-11-06"
+  "MINDSPACE|day": 508.69,
+  "_date": "2026-11-09"
  },
  "monthly": {
   "ENERGYINF|month": {
    "dir": "down",
    "ref": 66.0
-  },
-  "IRBINVIT|month": {
-   "dir": "down",
-   "ref": 60.79
   },
   "PSTITANIA|month": {
    "dir": "down",
