@@ -18,3 +18,5 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-09 13:30,MINDSPACE,NSE,497.45,-0.12,0.75,1.48,13:30,Moved -2.21% since last alert at ₹508.69 (day change now -0.12%),2
 2026-11-09 15:15,ANZEN,NSE,128.0,-3.03,-2.29,0.20,15:12,Price -3.03% today (vs prev close),2
 2026-11-11 09:20,INDIGRID,NSE,168.8,-2.17,0.14,0.95,09:20,Price -2.17% today (vs prev close),2
+2026-11-11 10:00,EMBASSY,NSE,420.0,0.02,-2.44,4.31,09:59,"Volume 4.3x usual for this time (300,458 vs avg 581,921/day, NSE+BSE)",2
+2026-11-11 10:00,CAPINVIT,NSE,79.92,0.41,3.14,11.24,10:00,"Volume 11.2x usual for this time (682,614 vs avg 505,087/day, NSE+BSE)",2
