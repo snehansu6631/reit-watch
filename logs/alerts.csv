@@ -23,3 +23,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-11 10:20,ENERGYINF,BSE,65.0,-2.26,-12.16,3.56,10:02,Price -2.26% today (vs prev close),2
 2026-11-11 10:20,ENERGYINF,BSE,65.0,-2.26,-12.16,3.56,10:02,"Volume 3.6x usual for this time (350,000 vs avg 768,750/day, BSE)",2
 2026-11-11 12:45,NXT-INFRA,NSE,99.0,-6.60,,0.09,12:42,Price -6.60% today (vs prev close),2
+2026-11-11 14:25,INDUSINVIT,NSE,126.38,-2.97,-1.35,0.53,14:26,Price -2.97% today (vs prev close),2
