@@ -20,3 +20,5 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-11 09:20,INDIGRID,NSE,168.8,-2.17,0.14,0.95,09:20,Price -2.17% today (vs prev close),2
 2026-11-11 10:00,EMBASSY,NSE,420.0,0.02,-2.44,4.31,09:59,"Volume 4.3x usual for this time (300,458 vs avg 581,921/day, NSE+BSE)",2
 2026-11-11 10:00,CAPINVIT,NSE,79.92,0.41,3.14,11.24,10:00,"Volume 11.2x usual for this time (682,614 vs avg 505,087/day, NSE+BSE)",2
+2026-11-11 10:20,ENERGYINF,BSE,65.0,-2.26,-12.16,3.56,10:02,Price -2.26% today (vs prev close),2
+2026-11-11 10:20,ENERGYINF,BSE,65.0,-2.26,-12.16,3.56,10:02,"Volume 3.6x usual for this time (350,000 vs avg 768,750/day, BSE)",2
