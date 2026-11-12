@@ -35,3 +35,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-12 11:20,CAPINVIT,NSE,80.0,0.25,2.58,3.78,11:20,"Volume 3.8x usual for this time (705,252 vs avg 558,524/day, NSE+BSE)",2
 2026-11-12 11:30,CAPINVIT,NSE,80.07,0.34,2.67,9.26,11:30,"Volume 9.3x usual for this time (1,863,476 vs avg 558,524/day, NSE+BSE)",2
 2026-11-12 12:15,CUBEINVIT,NSE,151.95,-0.01,-1.32,3.25,12:09,"Volume 3.3x usual for this time (1,147,640 vs avg 757,249/day, NSE+BSE)",2
+2026-11-12 13:05,INDIGRID,NSE,165.2,-2.11,-1.84,1.71,13:05,Price -2.11% today (vs prev close),2
