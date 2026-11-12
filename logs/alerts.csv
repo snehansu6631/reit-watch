@@ -26,3 +26,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-11 14:25,INDUSINVIT,NSE,126.38,-2.97,-1.35,0.53,14:26,Price -2.97% today (vs prev close),2
 2026-11-11 15:20,ENERGYINF,BSE,64.65,-2.78,-12.64,1.61,15:03,1-month move extended: -12.64% over ~1 month (-2.05% beyond last alert at ₹66.00),2
 2026-11-12 09:15,CITIUSINVT,NSE,114.83,-2.43,0.50,0.13,09:15,Price -2.43% today (vs prev close),2
+2026-11-12 09:45,ENERGYINF,BSE,64.72,-2.68,-12.54,0.33,09:30,Price -2.68% today (vs prev close),2
