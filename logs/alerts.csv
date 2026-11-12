@@ -29,3 +29,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-12 09:45,ENERGYINF,BSE,64.72,-2.68,-12.54,0.33,09:30,Price -2.68% today (vs prev close),2
 2026-11-12 09:50,ALTIUSINVIT,BSE,174.5,2.05,1.42,0.81,09:35,Price +2.05% today (vs prev close),2
 2026-11-12 10:00,ALTIUSINVIT,BSE,177.75,3.95,3.31,4.84,09:44,"Volume 4.8x usual for this time (150,000 vs avg 310,000/day, BSE)",2
+2026-11-12 10:10,INDUSINVIT,NSE,130.0,2.27,1.61,0.86,10:10,Price +2.27% today (vs prev close),2
