@@ -37,3 +37,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-12 12:15,CUBEINVIT,NSE,151.95,-0.01,-1.32,3.25,12:09,"Volume 3.3x usual for this time (1,147,640 vs avg 757,249/day, NSE+BSE)",2
 2026-11-12 13:05,INDIGRID,NSE,165.2,-2.11,-1.84,1.71,13:05,Price -2.11% today (vs prev close),2
 2026-11-12 14:45,CITIUSINVT,NSE,112.4,-4.49,-1.63,1.13,14:43,Moved -2.12% since last alert at ₹114.83 (day change now -4.49%),2
+2026-11-12 15:30,NXST,NSE,162.35,2.32,-0.90,3.31,15:29,Price +2.32% today (vs prev close),2
