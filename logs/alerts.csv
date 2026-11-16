@@ -45,3 +45,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-13 10:20,ENERGYINF,BSE,64.98,0.40,-12.19,3.48,10:04,Moved +2.95% since last alert at ₹63.12 (day change now +0.40%),2
 2026-11-16 10:00,PGINVIT,NSE,107.1,0.37,3.29,3.27,10:00,"Volume 3.3x usual for this time (629,478 vs avg 1,603,596/day, NSE+BSE)",2
 2026-11-16 11:05,KRT,NSE,111.23,0.17,-1.40,4.13,11:04,"Volume 4.1x usual for this time (1,263,791 vs avg 1,043,696/day, NSE+BSE)",2
+2026-11-16 12:05,ALTIUSINVIT,BSE,173.0,-0.57,-0.57,3.80,11:46,"Volume 3.8x usual for this time (525,000 vs avg 342,500/day, BSE)",2
