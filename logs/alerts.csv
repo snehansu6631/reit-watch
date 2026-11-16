@@ -43,3 +43,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-13 10:00,EMBASSY,NSE,419.95,0.33,-3.46,3.16,09:59,"Volume 3.2x usual for this time (241,546 vs avg 636,750/day, NSE+BSE)",2
 2026-11-13 10:00,ENERGYINF,BSE,63.12,-2.47,-14.70,3.34,09:32,"Volume 3.3x usual for this time (200,000 vs avg 598,750/day, BSE)",2
 2026-11-13 10:20,ENERGYINF,BSE,64.98,0.40,-12.19,3.48,10:04,Moved +2.95% since last alert at ₹63.12 (day change now +0.40%),2
+2026-11-16 10:00,PGINVIT,NSE,107.1,0.37,3.29,3.27,10:00,"Volume 3.3x usual for this time (629,478 vs avg 1,603,596/day, NSE+BSE)",2
