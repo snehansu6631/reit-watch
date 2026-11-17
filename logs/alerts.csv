@@ -54,3 +54,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-17 10:20,NXT-INFRA,NSE,98.01,0.01,,10.16,10:16,"Volume 10.2x usual for this time (700,000 vs avg 419,643/day, NSE)",2
 2026-11-17 10:55,PSTITANIA,BSE,1036000.0,3.60,-6.33,45.97,10:36,Price +3.60% today (vs prev close),2
 2026-11-17 11:35,ENERGYINF,BSE,66.5,0.80,-4.80,2.78,11:17,"Volume 2.8x usual for this time (500,000 vs avg 551,250/day, BSE)",2
+2026-11-17 12:35,ANZEN,NSE,127.5,-3.41,-2.67,0.45,12:35,Price -3.41% today (vs prev close),2
