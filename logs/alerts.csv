@@ -49,3 +49,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-16 13:20,NDRINVIT,NSE,131.0,-13.39,,0.17,13:20,Price -13.39% today (vs prev close),2
 2026-11-16 15:25,NDRINVIT,NSE,147.51,-2.47,,0.22,15:21,Moved +12.60% since last alert at ₹131.00 (day change now -2.47%),2
 2026-11-17 09:15,PGINVIT,NSE,104.05,-2.85,1.02,0.25,09:15,Price -2.85% today (vs prev close),2
+2026-11-17 10:00,PGINVIT,NSE,104.46,-2.46,1.42,3.12,10:00,"Volume 3.1x usual for this time (612,985 vs avg 1,638,983/day, NSE+BSE)",2
