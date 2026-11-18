@@ -59,3 +59,6 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-17 14:50,NDRINVIT,NSE,151.75,2.87,,0.52,14:48,Price +2.87% today (vs prev close),2
 2026-11-17 15:10,NXT-INFRA,NSE,95.0,-3.06,,3.55,15:07,Price -3.06% today (vs prev close),2
 2026-11-18 09:15,CAPINVIT,NSE,78.75,-2.89,1.04,17.50,09:15,Price -2.89% today (vs prev close),2
+2026-11-18 10:05,PGINVIT,NSE,103.54,-0.60,0.52,3.60,10:04,"Volume 3.6x usual for this time (807,498 vs avg 1,683,878/day, NSE+BSE)",2
+2026-11-18 10:05,ANZEN,NSE,129.3,1.41,-2.05,3.83,09:16,"Volume 3.8x usual for this time (75,000 vs avg 196,053/day, NSE+BSE)",2
+2026-11-18 10:05,VERTIS,NSE,115.0,-1.29,0.44,8.85,09:52,"Volume 8.8x usual for this time (300,000 vs avg 337,500/day, NSE)",2
