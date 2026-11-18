@@ -58,3 +58,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-17 13:25,IRBINVIT,NSE,61.07,-0.23,-3.46,3.14,13:25,"Volume 3.1x usual for this time (2,562,020 vs avg 1,217,801/day, NSE+BSE)",2
 2026-11-17 14:50,NDRINVIT,NSE,151.75,2.87,,0.52,14:48,Price +2.87% today (vs prev close),2
 2026-11-17 15:10,NXT-INFRA,NSE,95.0,-3.06,,3.55,15:07,Price -3.06% today (vs prev close),2
+2026-11-18 09:15,CAPINVIT,NSE,78.75,-2.89,1.04,17.50,09:15,Price -2.89% today (vs prev close),2
