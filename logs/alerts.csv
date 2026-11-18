@@ -65,3 +65,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-18 10:30,ALTIUSINVIT,BSE,172.5,-0.29,0.00,3.67,10:12,"Volume 3.7x usual for this time (200,000 vs avg 353,750/day, BSE)",2
 2026-11-18 11:35,RIIT,NSE,118.39,-0.08,-2.78,3.09,11:34,"Volume 3.1x usual for this time (272,113 vs avg 236,655/day, NSE+BSE)",2
 2026-11-18 12:15,ANANTAM,NSE,102.2,-0.28,-2.55,2.66,12:15,"Volume 2.7x usual for this time (236,552 vs avg 185,002/day, NSE+BSE)",2
+2026-11-18 13:05,NXT-INFRA,NSE,97.5,2.63,,0.17,13:04,Price +2.63% today (vs prev close),2
