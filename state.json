@@ -12,10 +12,6 @@
   "_date": "2026-11-18"
  },
  "monthly": {
-  "ENERGYINF|month": {
-   "dir": "down",
-   "ref": 63.12
-  },
   "PSTITANIA|month": {
    "dir": "down",
    "ref": 999999.0
