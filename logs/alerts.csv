@@ -71,3 +71,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-19 10:05,NHIT,NSE,169.0,0.00,0.60,6.71,10:04,"Volume 6.7x usual for this time (300,000 vs avg 336,250/day, NSE+BSE)",2
 2026-11-19 10:15,CITIUSINVT,NSE,113.0,0.28,-1.07,5.35,10:14,"Volume 5.3x usual for this time (135,570 vs avg 160,342/day, NSE+BSE)",2
 2026-11-19 10:40,CAPINVIT,NSE,79.6,0.68,2.41,2.90,10:40,"Volume 2.9x usual for this time (529,182 vs avg 805,478/day, NSE+BSE)",2
+2026-11-19 11:45,SEITINVIT,NSE,121.49,-0.66,,5.29,11:43,"Volume 5.3x usual for this time (825,000 vs avg 394,444/day, NSE)",2
