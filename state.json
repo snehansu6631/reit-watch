@@ -1,12 +1,17 @@
 {
  "daily": {
-  "CITIUSINVT|vol": 3.172716529616294,
-  "NXST|day": 163.4,
-  "NXT-INFRA|vol": 6.615106051561393,
-  "PSTITANIA|day": 1036000.0,
-  "_date": "2026-11-20"
+  "_date": "2026-11-23"
  },
- "monthly": {},
+ "monthly": {
+  "BIRET|month": {
+   "dir": "up",
+   "ref": 319.84
+  },
+  "INDUSINVIT|month": {
+   "dir": "up",
+   "ref": 130.96
+  }
+ },
  "volume_source": {
   "ALTIUSINVIT": "ALTIUSINVIT.BO (BSE)",
   "ANANTAM": "ANANTAM-IV.NS (NSE+BSE)",
