@@ -83,3 +83,6 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-23 10:35,NHIT,NSE,171.0,0.00,0.65,4.35,10:33,"Volume 4.4x usual for this time (350,000 vs avg 382,500/day, NSE+BSE)",2
 2026-11-23 13:25,RIIT,NSE,118.5,0.01,-0.41,4.23,13:25,"Volume 4.2x usual for this time (629,550 vs avg 223,501/day, NSE+BSE)",2
 2026-11-25 09:30,ANZEN,NSE,128.0,-3.03,-3.03,2.61,09:29,Price -3.03% today (vs prev close),2
+2026-11-25 10:00,PGINVIT,NSE,105.0,0.06,2.62,2.65,10:00,"Volume 2.7x usual for this time (500,355 vs avg 1,567,332/day, NSE+BSE)",2
+2026-11-25 10:00,CITIUSINVT,NSE,114.75,0.30,1.56,3.35,09:53,"Volume 3.3x usual for this time (36,090 vs avg 106,207/day, NSE+BSE)",2
+2026-11-25 10:00,ENERGYINF,BSE,65.75,-0.77,-3.15,10.21,09:37,"Volume 10.2x usual for this time (675,000 vs avg 661,250/day, BSE)",2
