@@ -82,3 +82,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-23 09:15,INDUSINVIT,NSE,130.96,0.00,5.62,0.02,09:15,Price +5.62% over ~1 month,2
 2026-11-23 10:35,NHIT,NSE,171.0,0.00,0.65,4.35,10:33,"Volume 4.4x usual for this time (350,000 vs avg 382,500/day, NSE+BSE)",2
 2026-11-23 13:25,RIIT,NSE,118.5,0.01,-0.41,4.23,13:25,"Volume 4.2x usual for this time (629,550 vs avg 223,501/day, NSE+BSE)",2
+2026-11-25 09:30,ANZEN,NSE,128.0,-3.03,-3.03,2.61,09:29,Price -3.03% today (vs prev close),2
