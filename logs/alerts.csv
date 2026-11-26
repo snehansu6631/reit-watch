@@ -91,3 +91,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-25 15:10,ANZEN,NSE,128.0,-3.03,-3.03,3.92,09:29,"Volume 3.9x usual for this time (75,000 vs avg 191,250/day, NSE+BSE)",2
 2026-11-26 10:00,INDIGRID,NSE,165.0,0.43,-2.21,3.10,10:00,"Volume 3.1x usual for this time (291,306 vs avg 782,653/day, NSE+BSE)",2
 2026-11-26 14:30,EMBASSY,NSE,423.98,2.00,2.30,0.44,14:30,Price +2.00% today (vs prev close),2
+2026-11-26 14:55,NDRINVIT,NSE,147.0,-2.33,-0.68,0.82,14:55,Price -2.33% today (vs prev close),2
