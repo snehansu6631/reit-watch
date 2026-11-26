@@ -1,13 +1,7 @@
 {
  "daily": {
-  "ANZEN|day": 128.0,
-  "ANZEN|vol": 3.9215686274509802,
-  "CITIUSINVT|vol": 3.347503014754145,
-  "ENERGYINF|vol": 10.207939508506616,
-  "NHIT|vol": 3.6888571920419055,
-  "PGINVIT|vol": 2.6505167539770293,
-  "VERTIS|vol": 2.636071500301265,
-  "_date": "2026-11-25"
+  "INDIGRID|vol": 3.097104164575725,
+  "_date": "2026-11-26"
  },
  "monthly": {
   "INDUSINVIT|month": {

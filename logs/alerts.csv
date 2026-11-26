@@ -89,3 +89,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-25 10:35,NHIT,NSE,170.0,-0.58,0.59,3.69,10:32,"Volume 3.7x usual for this time (300,000 vs avg 392,500/day, NSE+BSE)",2
 2026-11-25 11:25,VERTIS,NSE,114.65,0.17,-0.74,2.64,11:22,"Volume 2.6x usual for this time (350,000 vs avg 390,000/day, NSE)",2
 2026-11-25 15:10,ANZEN,NSE,128.0,-3.03,-3.03,3.92,09:29,"Volume 3.9x usual for this time (75,000 vs avg 191,250/day, NSE+BSE)",2
+2026-11-26 10:00,INDIGRID,NSE,165.0,0.43,-2.21,3.10,10:00,"Volume 3.1x usual for this time (291,306 vs avg 782,653/day, NSE+BSE)",2
