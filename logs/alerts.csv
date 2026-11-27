@@ -93,3 +93,4 @@ time_ist,symbol,exchange,price,day_pct,month_pct,rel_volume,data_time_ist,alert,
 2026-11-26 14:30,EMBASSY,NSE,423.98,2.00,2.30,0.44,14:30,Price +2.00% today (vs prev close),2
 2026-11-26 14:55,NDRINVIT,NSE,147.0,-2.33,-0.68,0.82,14:55,Price -2.33% today (vs prev close),2
 2026-11-27 09:50,MINDSPACE,NSE,500.0,0.65,5.00,0.72,09:50,Price +5.00% over ~1 month,2
+2026-11-27 10:00,INDUSINVIT,NSE,130.14,-0.65,2.81,6.80,10:00,"Volume 6.8x usual for this time (130,684 vs avg 159,748/day, NSE+BSE)",2
